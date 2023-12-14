@@ -254,7 +254,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _runSpeed: 10
+  _settings: {fileID: 11400000, guid: b04106ee70659324d8c85e8c01fe7922, type: 2}
+  _animator: {fileID: 2311933398526377576}
 --- !u!61 &3859889774586373589
 BoxCollider2D:
   m_ObjectHideFlags: 0

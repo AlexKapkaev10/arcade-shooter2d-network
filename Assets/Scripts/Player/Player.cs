@@ -1,6 +1,6 @@
-using System;
 using Mirror;
 using Scripts.Interfaces;
+using Scripts.ScriptableObjects;
 using UnityEngine;
 
 namespace Scripts.Game
@@ -8,24 +8,19 @@ namespace Scripts.Game
     [RequireComponent(typeof(Rigidbody2D))]
     public class Player : NetworkBehaviour
     {
-        [SerializeField] private float _runSpeed = 10f;
-        private Transform _transform;
+        [SerializeField] private PlayerCustomSettings _settings;
+        [SerializeField] private Animator _animator;
         
-        private bool _isFlip;
-        private bool _isFirstFlip;
+        private Transform _transform;
         private Rigidbody2D _rg;
         private Camera _camera;
         private Vector2 _input;
 
-        private void SetLocalRotation(Quaternion value)
-        {
-            if (_transform.localRotation == value)
-                return;
+        private readonly int Run = Animator.StringToHash("Run");
+        private bool _isFlip;
+        private bool _isFirstFlip;
+        private bool _isRun;
 
-            Debug.Log("Flip");
-            _transform.localRotation = value;
-        }
-        
         private void Start()
         {
             _transform = transform;
@@ -39,6 +34,8 @@ namespace Scripts.Game
                 return;
 
             ProcessInput();
+            CalculateLookSide();
+            SetRun(_input != Vector2.zero);
         }
 
         private void FixedUpdate()
@@ -60,7 +57,19 @@ namespace Scripts.Game
         private void ProcessInput()
         {
             _input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        }
 
+        private void SetRun(bool value)
+        {
+            if (_isRun == value)
+                return;
+
+            _isRun = value;
+            _animator.SetBool(Run, _isRun);
+        }
+
+        private void CalculateLookSide()
+        {
             if (_input.x < 0 && !_isFirstFlip)
             {
                 _isFirstFlip = true;
@@ -81,11 +90,22 @@ namespace Scripts.Game
                 _isFlip = false;
                 SetLocalRotation(Quaternion.Euler(0, 180, 0));
             }
+            
+            void SetLocalRotation(Quaternion value)
+            {
+                if (_transform.localRotation == value)
+                    return;
+
+                _transform.localRotation = value;
+            }
         }
 
         private void PlayerMovement()
         {
-            _rg.MovePosition(_rg.position + _input * (_runSpeed * Time.deltaTime));
+            if (_input == Vector2.zero)
+                return;
+            
+            _rg.MovePosition(_rg.position + _input * (_settings.RunSpeed * Time.deltaTime));
         }
  
         private void CameraMovement()
