@@ -10,7 +10,10 @@ namespace Scripts.ScriptableObjects
         [SerializeField] private ProjectileData[] _projectilesData;
         [SerializeField] private float _runSpeed = 10f;
 
+        [SerializeField] private Color _colorProxyBody;
+
         public float RunSpeed => _runSpeed;
+        public Color ColorProxyBody => _colorProxyBody;
 
         public Projectile GetProjectileByType(ProjectileType type)
         {

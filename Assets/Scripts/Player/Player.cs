@@ -5,45 +5,36 @@ using UnityEngine;
 
 namespace Scripts.Game
 {
-    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(PlayerMovement))]
     public class Player : NetworkBehaviour
     {
         [SerializeField] private PlayerCustomSettings _settings;
-        [SerializeField] private Animator _animator;
+        [SerializeField] private Body _body;
         
+        private PlayerMovement _playerMovement;
         private Transform _transform;
-        private Rigidbody2D _rg;
         private Camera _camera;
-        private Vector2 _input;
-
-        private readonly int Run = Animator.StringToHash("Run");
-        private bool _isFlip;
-        private bool _isFirstFlip;
-        private bool _isRun;
 
         private void Start()
         {
+            _playerMovement = GetComponent<PlayerMovement>();
+            _playerMovement?.Initialize(isLocalPlayer, _settings.RunSpeed);
+            _body?.Initialize(isLocalPlayer ? Color.white : _settings.ColorProxyBody);
             _transform = transform;
-            _rg = GetComponent<Rigidbody2D>();
             _camera = Camera.main;
+
+            gameObject.layer = isLocalPlayer ? LayerMask.NameToLayer("Client") : LayerMask.NameToLayer("Proxy");
         }
 
         private void Update()
         {
             if (!isLocalPlayer)
                 return;
-
-            ProcessInput();
-            CalculateLookSide();
-            SetRun(_input != Vector2.zero);
-        }
-
-        private void FixedUpdate()
-        {
-            if (!isLocalPlayer)
-                return;
             
-            PlayerMovement();
+            if (Input.GetMouseButtonDown(0))
+            {
+                Shoot();
+            }
         }
 
         private void LateUpdate()
@@ -54,60 +45,18 @@ namespace Scripts.Game
             CameraMovement();
         }
 
-        private void ProcessInput()
+        [Command]
+        private void Shoot()
         {
-            _input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            Projectile projectile = Instantiate(
+                _settings.GetProjectileByType(ProjectileType.Boomerang), 
+                _transform.position, 
+                Quaternion.identity);
+            NetworkServer.Spawn(projectile.gameObject);
+
+            projectile.Shoot(_transform.right);
         }
 
-        private void SetRun(bool value)
-        {
-            if (_isRun == value)
-                return;
-
-            _isRun = value;
-            _animator.SetBool(Run, _isRun);
-        }
-
-        private void CalculateLookSide()
-        {
-            if (_input.x < 0 && !_isFirstFlip)
-            {
-                _isFirstFlip = true;
-                SetLocalRotation(Quaternion.Euler(0, 180, 0));
-            }
-            else if (_input.x > 0 && !_isFirstFlip)
-            {
-                _isFirstFlip = true;
-            }
-
-            if (_input.x > 0 && !_isFlip)
-            {
-                _isFlip = true;
-                SetLocalRotation(Quaternion.Euler(0, 0, 0));
-            }
-            else if (_input.x < 0 && _isFlip)
-            {
-                _isFlip = false;
-                SetLocalRotation(Quaternion.Euler(0, 180, 0));
-            }
-            
-            void SetLocalRotation(Quaternion value)
-            {
-                if (_transform.localRotation == value)
-                    return;
-
-                _transform.localRotation = value;
-            }
-        }
-
-        private void PlayerMovement()
-        {
-            if (_input == Vector2.zero)
-                return;
-            
-            _rg.MovePosition(_rg.position + _input * (_settings.RunSpeed * Time.deltaTime));
-        }
- 
         private void CameraMovement()
         {
             _camera.transform.localPosition = _transform.localPosition + new Vector3(0, 0, -5);

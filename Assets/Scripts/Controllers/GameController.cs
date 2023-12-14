@@ -1,4 +1,4 @@
-using System;
+using Mirror;
 using Scripts.CustomNetwork;
 using Scripts.Interfaces;
 using UnityEngine;
@@ -16,12 +16,11 @@ namespace Scripts.Controllers
         private void Configure(IObjectResolver resolver)
         {
             _resolver = resolver;
-            _runner = resolver.Resolve<INetworkRunner>();
         }
 
         private void Start()
         {
-            //_spawner = _resolver.Resolve<ISpawner>();
+            _runner = NetworkManager.singleton.GetComponent<INetworkRunner>();
             _runner.Initialize();
         }
 

@@ -15,4 +15,5 @@ MonoBehaviour:
   _projectilesData:
   - Type: 0
     Prefab: {fileID: 5207993057372646081, guid: ac30fcb4daaaad04890711c3d13a2f09, type: 3}
-  _runSpeed: 10
+  _runSpeed: 5
+  _colorProxyBody: {r: 1, g: 0.9490196, b: 0.5137255, a: 1}
