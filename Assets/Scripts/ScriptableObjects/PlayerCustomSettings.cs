@@ -8,12 +8,14 @@ namespace Scripts.ScriptableObjects
     public class PlayerCustomSettings : ScriptableObject
     {
         [SerializeField] private ProjectileData[] _projectilesData;
-        [SerializeField] private float _runSpeed = 10f;
-
         [SerializeField] private Color _colorProxyBody;
-
-        public float RunSpeed => _runSpeed;
+        
+        [SerializeField] private float _runSpeed = 10f;
+        [SerializeField] private float _shootForce = 10;
+        
         public Color ColorProxyBody => _colorProxyBody;
+        public float RunSpeed => _runSpeed;
+        public float ShootForce => _shootForce;
 
         public Projectile GetProjectileByType(ProjectileType type)
         {

@@ -4,11 +4,9 @@ namespace Scripts.Game
 {
     public class Projectile : MonoBehaviour
     {
-        [SerializeField] protected float _shootSpeed = 10;
-
-        public virtual void Initialize() {}
-        public virtual void Shoot(Vector2 direction){}
-
+        public virtual void Initialize(Collider2D ownerCollider) {}
+        public virtual void Shoot(Vector2 direction, float shootForce){}
         protected virtual void OnCollisionEnter2D(Collision2D col) { }
+        protected virtual void OnTriggerEnter2D(Collider2D col) { }
     }
 }

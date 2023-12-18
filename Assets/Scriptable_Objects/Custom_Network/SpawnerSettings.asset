@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79413801569544b2acc43005baf9012c, type: 3}
   m_Name: SpawnerSettings
   m_EditorClassIdentifier: 
-  _coinPrefab: {fileID: 2483696332947786692, guid: afa67a7ca1e0fb4468525c8c49c7aa1b, type: 3}
+  _coinPrefab: {fileID: 6982306530216913857, guid: afa67a7ca1e0fb4468525c8c49c7aa1b, type: 3}
   _coinsSpawnCount: 5

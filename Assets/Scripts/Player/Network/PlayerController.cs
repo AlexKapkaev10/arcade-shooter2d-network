@@ -2,28 +2,49 @@ using Mirror;
 using Scripts.Interfaces;
 using Scripts.ScriptableObjects;
 using UnityEngine;
+using VContainer;
 
 namespace Scripts.Game
 {
     [RequireComponent(typeof(PlayerMovement))]
-    public class Player : NetworkBehaviour
+    [RequireComponent(typeof(Collider2D))]
+    
+    public class PlayerController : NetworkBehaviour
     {
         [SerializeField] private PlayerCustomSettings _settings;
-        [SerializeField] private Body _body;
-        
-        private PlayerMovement _playerMovement;
+
+        [SyncVar] [SerializeField] private float _shootForce;
+
+        private IBankService _bankService;
+
+        private Body _body;
+        private Collider2D _collider;
         private Transform _transform;
         private Camera _camera;
 
+        [Inject]
+        private void Construct(IObjectResolver resolver)
+        {
+            if (!isLocalPlayer)
+                return;
+            
+            _bankService = resolver.Resolve<IBankService>();
+            resolver.Resolve<IGameView>().Initialize(_bankService);
+            _bankService.Coins = 0;
+        }
+
         private void Start()
         {
-            _playerMovement = GetComponent<PlayerMovement>();
-            _playerMovement?.Initialize(isLocalPlayer, _settings.RunSpeed);
-            _body?.Initialize(isLocalPlayer ? Color.white : _settings.ColorProxyBody);
+            _collider = GetComponent<Collider2D>();
+            _body = GetComponentInChildren<Body>();
+            
             _transform = transform;
             _camera = Camera.main;
 
-            gameObject.layer = isLocalPlayer ? LayerMask.NameToLayer("Client") : LayerMask.NameToLayer("Proxy");
+            _body?.Initialize(isLocalPlayer ? Color.white : _settings.ColorProxyBody);
+
+            if (isServer)
+                _shootForce = _settings.ShootForce;
         }
 
         private void Update()
@@ -48,13 +69,15 @@ namespace Scripts.Game
         [Command]
         private void Shoot()
         {
-            Projectile projectile = Instantiate(
+            var projectile = Instantiate(
                 _settings.GetProjectileByType(ProjectileType.Boomerang), 
-                _transform.position, 
+                _transform.position,
                 Quaternion.identity);
+            
             NetworkServer.Spawn(projectile.gameObject);
+            projectile.Initialize(_collider);
+            projectile.Shoot(_body.transform.right, _shootForce);
 
-            projectile.Shoot(_transform.right);
         }
 
         private void CameraMovement()
@@ -67,6 +90,7 @@ namespace Scripts.Game
             if (col.TryGetComponent(out ICollectable collectable))
             {
                 collectable.Collect();
+                _bankService.Coins++;
             }
         }
     }

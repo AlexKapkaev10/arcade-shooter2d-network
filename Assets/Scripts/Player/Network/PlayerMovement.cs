@@ -1,37 +1,44 @@
+using Mirror;
+using Scripts.Controllers;
 using UnityEngine;
 
 namespace Scripts.Game
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public sealed class PlayerMovement : MonoBehaviour
+    [RequireComponent(typeof(InputController))]
+    public sealed class PlayerMovement : NetworkBehaviour
     {
+        [SerializeField] private float _runSpeedSetter = 3;
+        
+        private InputController _inputController;
         private Animator _animator;
         private Rigidbody2D _rg;
         private Transform _transform;
         private Vector2 _input;
 
-        private float _runSpeed;
-
-        private bool _isLocalPlayer;
+        [SyncVar] private float _runSpeed;
+        
         private bool _isFlip;
         private bool _isFirstFlip;
         private bool _isRun;
 
         private readonly int Run = Animator.StringToHash("Run");
 
-        public void Initialize(bool isLocalPlayer, float runSpeed)
+        public void Start()
         {
             _rg = GetComponent<Rigidbody2D>();
             _animator = GetComponentInChildren<Animator>();
+            _inputController = GetComponent<InputController>();
             
-            _isLocalPlayer = isLocalPlayer;
-            _runSpeed = runSpeed;
+            if (isServer)
+                _runSpeed = _runSpeedSetter;
+            
             _transform = transform;
         }
 
         private void Update()
         {
-            if (!_isLocalPlayer)
+            if (!isLocalPlayer)
                 return;
 
             ProcessInput();
@@ -41,15 +48,16 @@ namespace Scripts.Game
 
         private void FixedUpdate()
         {
-            if (!_isLocalPlayer)
+            if (!isLocalPlayer)
                 return;
             
+            CmdMove();
             Move();
         }
 
         private void ProcessInput()
         {
-            _input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            _input = _inputController.MoveInput;
         }
 
         private void SetRun(bool value)
@@ -93,12 +101,21 @@ namespace Scripts.Game
             }
         }
 
+        [Command]
+        private void CmdMove()
+        {
+            if (_input == Vector2.zero || !_rg)
+                return;
+            
+            _rg.MovePosition(_rg.position + _input.normalized * (_runSpeed * Time.deltaTime));
+        }
+        
         private void Move()
         {
             if (_input == Vector2.zero || !_rg)
                 return;
             
-            _rg.MovePosition(_rg.position + _input * (_runSpeed * Time.deltaTime));
+            _rg.MovePosition(_rg.position + _input.normalized * (_runSpeed * Time.deltaTime));
         }
     }
 }
