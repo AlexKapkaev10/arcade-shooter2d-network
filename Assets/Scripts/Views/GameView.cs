@@ -1,4 +1,5 @@
 using Scripts.CustomNetwork;
+using Scripts.Game;
 using Scripts.Interfaces;
 using TMPro;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Scripts.Views
         [SerializeField] private TMP_Text _globalCoins;
         [SerializeField] private TMP_Text _localCoins;
 
+        private INetworkRunner _runner;
         private ISpawner _spawner;
         private IBankService _bankService;
 
@@ -18,6 +20,7 @@ namespace Scripts.Views
         private void Construct(IObjectResolver resolver)
         {
             _spawner = resolver.Resolve<ISpawner>();
+            _runner = resolver.Resolve<IContainerService>().NetworkRunner;
         }
 
         public void Initialize(IBankService bankService)

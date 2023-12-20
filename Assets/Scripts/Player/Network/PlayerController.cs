@@ -13,7 +13,7 @@ namespace Scripts.Game
     {
         [SerializeField] private PlayerCustomSettings _settings;
 
-        [SyncVar] [SerializeField] private float _shootForce;
+        [SyncVar] private float _shootForce;
 
         private IBankService _bankService;
 

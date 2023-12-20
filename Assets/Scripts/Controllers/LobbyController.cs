@@ -1,4 +1,3 @@
-using Scripts.Core;
 using Scripts.CustomNetwork;
 using Scripts.Interfaces;
 using UnityEngine;
@@ -11,20 +10,24 @@ namespace Scripts.Controllers
     {
         [SerializeField] private Button _buttonHost;
         [SerializeField] private Button _buttonClient;
+        [SerializeField] private Button _buttonServer;
 
-        private INetworkRunner _networkRunner;
+        private IContainerService _containerService;
+        private INetworkRunner _runner;
         
         [Inject]
-        private void Construct(INetworkRunner networkRunner)
+        private void Construct(IContainerService containerService)
         {
-            _networkRunner = networkRunner;
+            _containerService = containerService;
         }
-
+        
         private void Start()
         {
-            _networkRunner.Initialize();
-            _buttonHost.onClick.AddListener(_networkRunner.StartGameHost);
-            _buttonClient.onClick.AddListener(_networkRunner.StartGameClient);
+            _containerService.InitializeNetworkRunner();
+            _runner = _containerService.NetworkRunner;
+            _buttonHost.onClick.AddListener(_runner.StartGameHost);
+            _buttonClient.onClick.AddListener(_runner.StartGameClient);
+            _buttonServer.onClick.AddListener(_runner.StartGameServer);
         }
     }
 }

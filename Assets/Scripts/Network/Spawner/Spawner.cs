@@ -10,7 +10,7 @@ namespace Scripts.CustomNetwork
     public class Spawner : NetworkBehaviour, ISpawner
     {
         public event Action<int> OnGlobalCoinsChange;
-
+        
         private SpawnerSettings _settings;
 
         [SyncVar] private int _allCoins;
@@ -26,7 +26,7 @@ namespace Scripts.CustomNetwork
             SpawnCoin();
         }
 
-        public void SpawnCoin()
+        private void SpawnCoin()
         {
             if (!isServer)
                 return;

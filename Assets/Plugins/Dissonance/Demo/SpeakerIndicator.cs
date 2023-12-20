@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace Dissonance.Demo
 {
-    public class SpeakerIndicator
-        : MonoBehaviour
+    public class SpeakerIndicator : MonoBehaviour
     {
         private GameObject _indicator;
         private Light _light;
