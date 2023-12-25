@@ -67,6 +67,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  _phoneNumber: 0
 --- !u!114 &8595994617181732142
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79413801569544b2acc43005baf9012c, type: 3}
-  m_Name: SpawnerSettings
+  m_Script: {fileID: 11500000, guid: f9b476c6418147389e070de072493fb0, type: 3}
+  m_Name: GameViewSettings
   m_EditorClassIdentifier: 
-  _coinPrefab: {fileID: 6982306530216913857, guid: afa67a7ca1e0fb4468525c8c49c7aa1b, type: 3}
-  _coinsSpawnCount: 0
+  _playerViewPrefab: {fileID: 7744882557424162303, guid: e363d059d97eff441bcda13d9690245f, type: 3}

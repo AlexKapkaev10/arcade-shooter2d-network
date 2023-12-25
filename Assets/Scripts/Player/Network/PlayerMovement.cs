@@ -4,41 +4,42 @@ using UnityEngine;
 
 namespace Scripts.Game
 {
-    [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(InputController))]
     public sealed class PlayerMovement : NetworkBehaviour
     {
         [SerializeField] private float _runSpeedSetter = 3;
-        
+        [SerializeField] private Rigidbody2D _rg;
+        [SerializeField] private Animator _animator;
+
         private InputController _inputController;
-        private Animator _animator;
-        private Rigidbody2D _rg;
         private Transform _transform;
         private Vector2 _input;
-
-        [SyncVar] private float _runSpeed;
-        
+        private bool _gameIsRun;
         private bool _isFlip;
         private bool _isFirstFlip;
         private bool _isRun;
-
         private readonly int Run = Animator.StringToHash("Run");
+
+        [SyncVar] private float _runSpeed;
+
+        public void SetGameRun(bool gameIsRun)
+        {
+            _gameIsRun = gameIsRun;
+        }
 
         public void Start()
         {
-            _rg = GetComponent<Rigidbody2D>();
-            _animator = GetComponentInChildren<Animator>();
             _inputController = GetComponent<InputController>();
             
             if (isServer)
                 _runSpeed = _runSpeedSetter;
             
-            _transform = transform;
+            _transform = _rg.transform;
         }
 
         private void Update()
         {
-            if (!isLocalPlayer)
+            if (!isLocalPlayer || !_gameIsRun)
                 return;
 
             ProcessInput();
@@ -48,7 +49,7 @@ namespace Scripts.Game
 
         private void FixedUpdate()
         {
-            if (!isLocalPlayer)
+            if (!isLocalPlayer|| !_gameIsRun)
                 return;
             
             CmdMove();

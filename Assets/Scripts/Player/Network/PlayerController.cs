@@ -1,22 +1,27 @@
 using Mirror;
+using Scripts.Dates;
 using Scripts.Interfaces;
 using Scripts.ScriptableObjects;
+using Scripts.Views;
 using UnityEngine;
 using VContainer;
 
 namespace Scripts.Game
 {
-    [RequireComponent(typeof(PlayerMovement))]
     [RequireComponent(typeof(Collider2D))]
     
     public class PlayerController : NetworkBehaviour
     {
         [SerializeField] private PlayerCustomSettings _settings;
-
-        [SyncVar] private float _shootForce;
+        
+        [SyncVar] private string _playerName;
 
         private IBankService _bankService;
+        private IGameView _gameView;
+        private IPlayerView _playerView;
 
+        private PlayerMovement _playerMovement;
+        private GunController _gunController;
         private Body _body;
         private Collider2D _collider;
         private Transform _transform;
@@ -29,32 +34,48 @@ namespace Scripts.Game
                 return;
             
             _bankService = resolver.Resolve<IBankService>();
-            resolver.Resolve<IGameView>().Initialize(_bankService);
+            _gameView = resolver.Resolve<IGameView>();
+            _gameView.Initialize(_bankService);
+            _gameView.OnSetPlayer += SetPlayerData;
             _bankService.Coins = 0;
         }
 
         private void Start()
         {
             _collider = GetComponent<Collider2D>();
+            _gunController = GetComponentInChildren<GunController>();
+            _playerMovement = GetComponentInChildren<PlayerMovement>();
             _body = GetComponentInChildren<Body>();
-            
+            _playerView = Instantiate(_settings.PlayerViewPrefab, transform.position, Quaternion.identity);
             _transform = transform;
             _camera = Camera.main;
 
             _body?.Initialize(isLocalPlayer ? Color.white : _settings.ColorProxyBody);
 
-            if (isServer)
-                _shootForce = _settings.ShootForce;
+            if (isClient && !isLocalPlayer)
+            {
+                _playerView.SetName(_playerName);
+            }
+
+            if (isLocalPlayer)
+            {
+                _body.SetVisible(false);
+            }
         }
 
         private void Update()
         {
+            if (string.IsNullOrEmpty(_playerName))
+                return;
+            
+            _playerView.SetPosition(_transform.position);
+            
             if (!isLocalPlayer)
                 return;
             
             if (Input.GetMouseButtonDown(0))
             {
-                Shoot();
+               _gunController.Shoot();
             }
         }
 
@@ -66,18 +87,19 @@ namespace Scripts.Game
             CameraMovement();
         }
 
-        [Command]
-        private void Shoot()
+        private void OnDestroy()
         {
-            var projectile = Instantiate(
-                _settings.GetProjectileByType(ProjectileType.Boomerang), 
-                _transform.position,
-                Quaternion.identity);
-            
-            NetworkServer.Spawn(projectile.gameObject);
-            projectile.Initialize(_collider);
-            projectile.Shoot(_body.transform.right, _shootForce);
+            if (_playerView != null)
+                Destroy(_playerView.GameObject);
+        }
 
+        private void SetPlayerData(PlayerData data)
+        {
+            _gameView.OnSetPlayer -= SetPlayerData;
+            _playerMovement.SetGameRun(true);
+            _playerView.SetName(data.Name);
+            CmdSetName(data.Name);
+            _body.SetVisible(true);
         }
 
         private void CameraMovement()
@@ -92,6 +114,21 @@ namespace Scripts.Game
                 collectable.Collect();
                 _bankService.Coins++;
             }
+        }
+
+        [Command]
+        private void CmdSetName(string value)
+        {
+            _playerName = value;
+            _playerView.SetName(_playerName);
+            RpcSetName(value);
+        }
+
+        [ClientRpc]
+        private void RpcSetName(string playerName)
+        {
+            _playerName = playerName;
+            _playerView.SetName(_playerName);
         }
     }
 }

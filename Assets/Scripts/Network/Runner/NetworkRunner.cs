@@ -1,4 +1,3 @@
-using System;
 using Mirror;
 using Scripts.ScriptableObjects;
 using UnityEngine;
@@ -9,24 +8,6 @@ namespace Scripts.CustomNetwork
     {
         [SerializeField] private NetworkRunnerSettings _settings;
         private NetworkManager _networkManager;
-
-        public override void OnClientConnect()
-        {
-            SpawnClient();
-        }
-
-        public void SpawnClient()
-        {
-            if (!clientLoadedScene)
-            {
-                if (!NetworkClient.ready)
-                {
-                    NetworkClient.Ready();
-                }
-                
-                NetworkClient.AddPlayer();
-            }
-        }
 
         public override void Awake()
         {

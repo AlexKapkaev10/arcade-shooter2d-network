@@ -288,7 +288,7 @@ namespace Mirror
         // users can overwrite this to display connection quality warnings, etc.
         protected virtual void OnConnectionQualityChanged(ConnectionQuality previous, ConnectionQuality current)
         {
-            Debug.Log($"[Mirror] Connection Quality changed from {previous} to {current}");
+            //Debug.Log($"[Mirror] Connection Quality changed from {previous} to {current}");
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -406,6 +406,7 @@ namespace Mirror
             if (authenticator != null)
             {
                 authenticator.OnStartClient();
+                Debug.Log("OnStartClient");
                 authenticator.OnClientAuthenticated.AddListener(OnClientAuthenticated);
             }
 

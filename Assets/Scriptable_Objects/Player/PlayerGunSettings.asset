@@ -9,13 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a43b1f59ab94aee8328a319de42f756, type: 3}
-  m_Name: PlayerCustomSettings
+  m_Script: {fileID: 11500000, guid: 58fb3b30089149308d5752721e0aa614, type: 3}
+  m_Name: PlayerGunSettings
   m_EditorClassIdentifier: 
   _projectilesData:
   - Type: 0
     Prefab: {fileID: 5207993057372646081, guid: ac30fcb4daaaad04890711c3d13a2f09, type: 3}
-  _playerViewPrefab: {fileID: 6746766031391812377, guid: dd9acf89030892d469873f8213b71989, type: 3}
-  _colorProxyBody: {r: 1, g: 0.9490196, b: 0.5137255, a: 1}
-  _runSpeed: 5
   _shootForce: 10

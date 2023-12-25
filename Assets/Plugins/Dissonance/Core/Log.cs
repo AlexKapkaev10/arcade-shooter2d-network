@@ -56,6 +56,7 @@ namespace Dissonance
 
             public void Log()
             {
+                return;
                 switch (_level)
                 {
                     case LogLevel.Trace:

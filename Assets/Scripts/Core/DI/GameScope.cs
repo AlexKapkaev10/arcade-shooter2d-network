@@ -13,6 +13,7 @@ namespace Scripts.Core
     public class GameScope : BaseScope
     {
         [SerializeField] private SpawnerSettings _spawnerSettings;
+        [SerializeField] private GameViewSettings _gameViewSettings;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -22,7 +23,7 @@ namespace Scripts.Core
                 .As<ISpawner>()
                 .WithParameter(_spawnerSettings);
             
-            builder.RegisterComponentInHierarchy<GameView>().As<IGameView>();
+            builder.RegisterComponentInHierarchy<GameView>().As<IGameView>().WithParameter(_gameViewSettings);
             builder.RegisterComponentInHierarchy<LocalService>().As<ILocalService>();
         }
     }

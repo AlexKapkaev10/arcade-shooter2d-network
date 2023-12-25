@@ -18,6 +18,7 @@ namespace Scripts.Services
         
         public override void OnStartClient()
         {
+            base.OnStartClient();
             WaitLocalClientAsync().Forget();
         }
 
