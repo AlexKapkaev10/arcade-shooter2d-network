@@ -1,6 +1,8 @@
 using Dissonance;
 using Game.Interfaces;
 using Mirror;
+using Player.Game;
+using Player.Interfaces;
 using Scripts.Dates;
 using Scripts.Interfaces;
 using UnityEngine;
@@ -9,18 +11,25 @@ using VContainer;
 namespace Scripts.Game
 {
     [RequireComponent(typeof(VoiceBroadcastTrigger))]
-    public class GamePhone : NetworkBehaviour, IGamePhone
+    public class GamePhone : PlayerNetworkAction, IPlayerAction, IGamePhone
     {
         [SyncVar] [SerializeField] private int _phoneNumber;
 
         private VoiceBroadcastTrigger _broadcastTrigger;
         private IGameView _gameView;
-        
+
+        public PlayerActionType Type => PlayerActionType.Phone;
+
         [Inject]
         private void Construct(IObjectResolver resolver)
         {
             _gameView = resolver.Resolve<IGameView>();
             _gameView.OnSetPlayer += SetPlayerData;
+        }
+
+        public void Initialize(in IPlayerController playerController)
+        {
+            
         }
 
         private void Start()

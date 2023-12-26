@@ -1,4 +1,7 @@
+using System;
 using Mirror;
+using Player.Game;
+using Player.Interfaces;
 using Scripts.Dates;
 using Scripts.Interfaces;
 using Scripts.ScriptableObjects;
@@ -9,23 +12,36 @@ using VContainer;
 namespace Scripts.Game
 {
     [RequireComponent(typeof(Collider2D))]
+    [RequireComponent(typeof(Rigidbody2D))]
     
-    public class PlayerController : NetworkBehaviour
+    public class PlayerController : NetworkBehaviour, IPlayerController
     {
         [SerializeField] private PlayerCustomSettings _settings;
-        
-        [SyncVar] private string _playerName;
 
+        [SyncVar] private string _playerName;
+        
+        private IPlayerAction[] _playerActions;
         private IBankService _bankService;
         private IGameView _gameView;
         private IPlayerView _playerView;
 
         private PlayerMovement _playerMovement;
-        private GunController _gunController;
-        private Body _body;
+        private PlayerGun _playerGun;
+
+        private PlayerSkin _playerSkin;
+        private Animator _animator;
+        private Rigidbody2D _rigidbody;
         private Collider2D _collider;
+
         private Transform _transform;
         private Camera _camera;
+
+        public Transform Transform => _transform;
+        public Rigidbody2D Rigidbody => _rigidbody;
+        public Animator Animator => _animator;
+        public Collider2D Collider => _collider;
+        public PlayerSkin PlayerSkin => _playerSkin;
+        public bool IsLocalPlayer => isLocalPlayer;
 
         [Inject]
         private void Construct(IObjectResolver resolver)
@@ -40,27 +56,37 @@ namespace Scripts.Game
             _bankService.Coins = 0;
         }
 
-        private void Start()
+        private void Awake()
         {
             _collider = GetComponent<Collider2D>();
-            _gunController = GetComponentInChildren<GunController>();
-            _playerMovement = GetComponentInChildren<PlayerMovement>();
-            _body = GetComponentInChildren<Body>();
-            _playerView = Instantiate(_settings.PlayerViewPrefab, transform.position, Quaternion.identity);
+            _rigidbody = GetComponent<Rigidbody2D>();
+            
+            _playerSkin = GetComponentInChildren<PlayerSkin>();
+            _animator = _playerSkin?.GetComponent<Animator>();
+            
             _transform = transform;
             _camera = Camera.main;
+            
+            _playerView = Instantiate(_settings.PlayerViewPrefab, _transform.position, Quaternion.identity);
 
-            _body?.Initialize(isLocalPlayer ? Color.white : _settings.ColorProxyBody);
+        }
 
+        private void Start()
+        {
             if (isClient && !isLocalPlayer)
-            {
                 _playerView.SetName(_playerName);
-            }
 
-            if (isLocalPlayer)
+            _playerActions = GetComponentsInChildren<IPlayerAction>();
+            if (_playerActions is not { Length: > 0 }) 
+                return;
+            
+            foreach (var action in _playerActions)
             {
-                _body.SetVisible(false);
+                action.Initialize(this);
             }
+            
+            _playerGun = GetActionByType(PlayerActionType.Gun) as PlayerGun;
+            _playerMovement = GetActionByType(PlayerActionType.Move) as PlayerMovement;
         }
 
         private void Update()
@@ -75,7 +101,7 @@ namespace Scripts.Game
             
             if (Input.GetMouseButtonDown(0))
             {
-               _gunController.Shoot();
+               _playerGun.Shoot();
             }
         }
 
@@ -99,7 +125,7 @@ namespace Scripts.Game
             _playerMovement.SetGameRun(true);
             _playerView.SetName(data.Name);
             CmdSetName(data.Name);
-            _body.SetVisible(true);
+            _playerSkin.SetVisible(true);
         }
 
         private void CameraMovement()
@@ -114,6 +140,19 @@ namespace Scripts.Game
                 collectable.Collect();
                 _bankService.Coins++;
             }
+        }
+
+        private PlayerNetworkAction GetActionByType(PlayerActionType type)
+        {
+            foreach (var playerAction in _playerActions)
+            {
+                if (playerAction.Type == type)
+                {
+                   return playerAction as PlayerNetworkAction;
+                }
+            }
+
+            return null;
         }
 
         [Command]

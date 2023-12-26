@@ -2,6 +2,7 @@ namespace Scripts.Game
 {
     public interface IDamageable
     {
-        public void Damage();
+        public PlayerHealth PlayerHealth { get; }
+        public void Damage(byte damageValue);
     }
 }

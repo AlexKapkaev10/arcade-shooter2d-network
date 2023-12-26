@@ -1,16 +1,18 @@
 using Mirror;
+using Player.Game;
+using Player.Interfaces;
 using Scripts.Controllers;
 using UnityEngine;
 
 namespace Scripts.Game
 {
     [RequireComponent(typeof(InputController))]
-    public sealed class PlayerMovement : NetworkBehaviour
+    public sealed class PlayerMovement : PlayerNetworkAction, IPlayerAction
     {
         [SerializeField] private float _runSpeedSetter = 3;
-        [SerializeField] private Rigidbody2D _rg;
-        [SerializeField] private Animator _animator;
-
+        
+        private Rigidbody2D _rg;
+        private Animator _animator;
         private InputController _inputController;
         private Transform _transform;
         private Vector2 _input;
@@ -21,6 +23,15 @@ namespace Scripts.Game
         private readonly int Run = Animator.StringToHash("Run");
 
         [SyncVar] private float _runSpeed;
+        
+        public PlayerActionType Type => PlayerActionType.Move;
+
+        public void Initialize(in IPlayerController playerController)
+        {
+            _rg = playerController.Rigidbody;
+            _animator = playerController.Animator;
+            _transform = playerController.Transform;
+        }
 
         public void SetGameRun(bool gameIsRun)
         {
@@ -33,8 +44,6 @@ namespace Scripts.Game
             
             if (isServer)
                 _runSpeed = _runSpeedSetter;
-            
-            _transform = _rg.transform;
         }
 
         private void Update()

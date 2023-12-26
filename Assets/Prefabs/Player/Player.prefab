@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8391411764661107295}
   - component: {fileID: 6356909502014741087}
   m_Layer: 0
-  m_Name: Body
+  m_Name: Player_Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -137,7 +137,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6686c4b2c63476fae99ff489c136c62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spriteRenderer: {fileID: 8961731251383636199}
+  _settings: {fileID: 11400000, guid: 0150c12a4d3d1a449aa2080b6adda4f9, type: 2}
+--- !u!1 &1414422809810299613
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1498500384607398471}
+  - component: {fileID: 839353027422543242}
+  m_Layer: 0
+  m_Name: Player_Health
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1498500384607398471
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414422809810299613}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5328101455581414027}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &839353027422543242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414422809810299613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e411d266fa84416bf5308134c7158ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _hp: 0
 --- !u!1 &2238237109060484869
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,7 +201,6 @@ GameObject:
   - component: {fileID: 3953319203757602518}
   - component: {fileID: 956402374963021465}
   - component: {fileID: 7494786311351891907}
-  - component: {fileID: 1306000204915833936}
   - component: {fileID: 5843934433926981194}
   m_Layer: 0
   m_Name: Player
@@ -179,6 +226,7 @@ Transform:
   - {fileID: 2862984499278593223}
   - {fileID: 3054162358103439225}
   - {fileID: 3350430947874271148}
+  - {fileID: 1498500384607398471}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &3859889774586373589
@@ -343,18 +391,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _settings: {fileID: 11400000, guid: b04106ee70659324d8c85e8c01fe7922, type: 2}
---- !u!114 &1306000204915833936
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2238237109060484869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e411d266fa84416bf5308134c7158ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5843934433926981194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -381,7 +417,7 @@ GameObject:
   - component: {fileID: 3350430947874271148}
   - component: {fileID: 8517668928422969501}
   m_Layer: 0
-  m_Name: Gun
+  m_Name: Player_Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -418,8 +454,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _settings: {fileID: 11400000, guid: 08a1cbd77aa521a408067dc2ad70baf1, type: 2}
-  _collider: {fileID: 3859889774586373589}
-  _body: {fileID: 6356909502014741087}
 --- !u!1 &6548710887684870303
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,7 +466,7 @@ GameObject:
   - component: {fileID: 5899015157428720245}
   - component: {fileID: 5111082948722716069}
   m_Layer: 0
-  m_Name: Move_Controller
+  m_Name: Player_Move
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -481,8 +515,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _runSpeedSetter: 3
-  _rg: {fileID: 7142148398144692619}
-  _animator: {fileID: 2311933398526377576}
 --- !u!1 &8162129985687683401
 GameObject:
   m_ObjectHideFlags: 0
@@ -495,7 +527,7 @@ GameObject:
   - component: {fileID: 2689166482127512287}
   - component: {fileID: 8314262607695628331}
   m_Layer: 0
-  m_Name: Game_Phone_Network
+  m_Name: Player_Phone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
